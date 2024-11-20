@@ -1,0 +1,44 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "ParticleSimulator",
+            "request": "launch",
+            "mainClass": "ParticleSimulator",
+            "projectName": "ParticleSimulation_98791fbf"
+        },
+        {
+            "type": "java",
+            "name": "ParticleSimulator",
+            "request": "launch",
+            "mainClass": "ParticleSimulator",
+            "projectName": "ParticleSimulation_6bb61eac"
+        },
+        {
+            "type": "java",
+            "name": "ParticleSimulator",
+            "request": "launch",
+            "mainClass": "${file}",
+            "vmArgs": "--module-path /Users/eddiegoodwin/Downloads/javafx-sdk-23.0.1/lib --add-modules javafx.controls,javafx.fxml",
+            "projectName": "ParticleSimulation_6bb61eac"
+        },
+        {
+            "type": "java",
+            "name": "Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "HelloFX",
+            "request": "launch",
+            "vmArgs": "--module-path /Users/eddiegoodwin/Downloads/javafx-sdk-23.0.1/lib --add-modules javafx.controls,javafx.fxml",
+            "mainClass": "${file}",
+            "projectName": "HelloFx_e31f1125"
+        }
+    ]
+}
