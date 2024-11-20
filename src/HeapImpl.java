@@ -16,10 +16,18 @@ class HeapImpl<T extends Comparable<? super T>> implements Heap<T> {
 
 	@SuppressWarnings("unchecked")
 	public void add (T data) {
-		// TODO: implement me
+		if (!(_numElements < _storage.length)){ // checking to see if the current _storage is filled 
+			T[] storage = (T[]) new Comparable[2*_storage.length]; // creating a array doubled in size to continue adding data
+			System.arraycopy(_storage, 0, storage, 0, _storage.length);
+			/*for(int i=0; i<_storage.length;i++){		// exess 2 delete
+				storage[i]=_storage[i];
+			}*/
+			_storage=storage;
+		}
 		_storage[_numElements] = data;
 		_numElements++;
 		trickleUp(_numElements-1);
+		
 	}
 
 	/**
@@ -36,7 +44,6 @@ class HeapImpl<T extends Comparable<? super T>> implements Heap<T> {
 	}
 
 	public T removeFirst () {
-		// TODO: implement me
 		T t =_storage[0] ;
 		_storage[0] = _storage[_numElements - 1];
 		_storage[_numElements - 1]=null;
