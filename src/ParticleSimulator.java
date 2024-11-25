@@ -3,6 +3,8 @@ import java.util.function.*;
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
+
+import javax.naming.NameNotFoundException;
 import javax.sound.sampled.*;
 
 public class ParticleSimulator extends JPanel {
@@ -60,6 +62,20 @@ public class ParticleSimulator extends JPanel {
 		}
 	}
 
+	private boolean eventValid(double time){
+		return true;
+	}
+	
+	private int getParticleIndex(String name) throws NameNotFoundException{
+		if (name==null)
+		throw new NameNotFoundException();
+		for (int i = 0; i < _particles.size();i++){
+			if (name.equals(_particles.get(i).getName()))
+				return i;
+		}
+		throw new NameNotFoundException();
+	}
+
 	/**
 	 * Executes the actual simulation.
 	 */
@@ -70,24 +86,68 @@ public class ParticleSimulator extends JPanel {
 		// collisions between all the particles and each other,
 		// and all the particles and the walls.
 		for (Particle p : _particles) {
-			// Add new events.
+			double collision;
+			for (Particle p2 : _particles) {
+				if (p!= p2){
+					collision = p.getCollisionTime(p2);
+					if (collision != Double.POSITIVE_INFINITY) {
+						_events.add(new Event(collision, lastTime, p.getName(), p2.getName()));
+					}
+				}
+			}
+			
+			_events.add(new Event(p.wallCollisionTime(_width), lastTime, p.getName()));
 		}
 		
 		_events.add(new TerminationEvent(_duration));
 		while (_events.size() > 0) {
 			Event event = _events.removeFirst();
 			double delta = event._timeOfEvent - lastTime;
-
+			Particle par1;
+			Particle par2;
 			if (event instanceof TerminationEvent) {
 				updateAllParticles(delta);
 				break;
 			}
+			try {
+				par1 = _particles.get(getParticleIndex(event._p1));
+			} catch (NameNotFoundException e){
+				par1=null;
+			}
+			try {
+				par2 = _particles.get(getParticleIndex(event._p2));
+			} catch (NameNotFoundException e){
+				par2=null;
+			}
 
 			// Check if event still valid; if not, then skip this event
-			// if (event not valid) {
-			//   continue;
-			// }
+			if (par1.getLastUpdate() != event._timeEventCreated) {
+				continue;
+			}
 
+			/*for (Particle p : _particles) {
+				double collision;
+				if (lastTime == p.wallCollisionTime(_width)){
+					par1=p;
+					break;
+				}
+				for (Particle p2 : _particles) {
+					if (p!= p2){
+						collision = p.getCollisionTime(p2);
+						if (collision != Double.POSITIVE_INFINITY&&lastTime==collision) {
+							par1 = p;
+							par2 = p2;
+							break;
+						}
+					}
+				}
+				if (par1 != null) {
+					break;
+				}
+			}
+			if (par1 == null) {
+				continue;
+			}*/
 
 			// Since the event is valid, then pause the simulation for the right
 			// amount of time, and then update the screen.
@@ -103,8 +163,26 @@ public class ParticleSimulator extends JPanel {
 			// Update the velocity of the particle(s) involved in the collision
 			// (either for a particle-wall collision or a particle-particle collision).
 			// You should call the Particle.updateAfterCollision method at some point.
+			//wall collision
+			if (par2 == null){
+				par1.updateWallCollision(lastTime, _width);
+			}
+			else {
+				par1.updateAfterCollision(lastTime, par2);
+			}
 
 			// Enqueue new events for the particle(s) that were involved in this event.
+			double collision;
+			for (Particle p2 : _particles) {
+				if (par1!= p2){
+					collision = par1.getCollisionTime(p2);
+					if (collision != Double.POSITIVE_INFINITY) {
+						_events.add(new Event(collision, lastTime));
+					}
+				}
+			}
+			
+			_events.add(new Event(par1.wallCollisionTime(_width), lastTime));
 
 			// Update the time of our simulation
 			lastTime = event._timeOfEvent;
@@ -112,6 +190,7 @@ public class ParticleSimulator extends JPanel {
 			// Redraw the screen
 			if (show) {
 				repaint();
+				paintComponent(getGraphics());
 			}
 		}
 

@@ -6,39 +6,17 @@
     "configurations": [
         {
             "type": "java",
-            "name": "ParticleSimulator",
-            "request": "launch",
-            "mainClass": "ParticleSimulator",
-            "projectName": "ParticleSimulation_98791fbf"
-        },
-        {
-            "type": "java",
-            "name": "ParticleSimulator",
-            "request": "launch",
-            "mainClass": "ParticleSimulator",
-            "projectName": "ParticleSimulation_6bb61eac"
-        },
-        {
-            "type": "java",
-            "name": "ParticleSimulator",
-            "request": "launch",
-            "mainClass": "${file}",
-            "vmArgs": "--module-path /Users/eddiegoodwin/Downloads/javafx-sdk-23.0.1/lib --add-modules javafx.controls,javafx.fxml",
-            "projectName": "ParticleSimulation_6bb61eac"
-        },
-        {
-            "type": "java",
             "name": "Current File",
             "request": "launch",
-            "mainClass": "${file}"
+            "mainClass": "${file}",
         },
         {
             "type": "java",
-            "name": "HelloFX",
+            "name": "ParticleSimulator",
             "request": "launch",
             "vmArgs": "--module-path /Users/eddiegoodwin/Downloads/javafx-sdk-23.0.1/lib --add-modules javafx.controls,javafx.fxml",
-            "mainClass": "${file}",
-            "projectName": "HelloFx_e31f1125"
+            "mainClass": "ParticleSimulator",
+            "projectName": "ParticleSimulation_98791fbf"
         }
     ]
 }

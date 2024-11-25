@@ -67,6 +67,89 @@ public class Particle {
 	}
 
 	/**
+	 * Returns the horizontal velocity
+	 * @return the horizontal velocity
+	 */
+	public double getVX(){
+		return _vx;
+	}
+
+	/**
+	 * Returns the vertical velocity
+	 * @return the vertical velocity
+	 */
+	public double getVY(){
+		return _vy;
+	}
+
+	/**
+	 * Returns the name
+	 * @return the name
+	 */
+	public String getName(){
+		return _name;
+	}
+
+	/**
+	 * Returns the last update time 
+	 * @return the vertical last update time 
+	 */
+	public double getLastUpdate(){
+		return _lastUpdateTime;
+	}
+
+	/**
+	 * returns the time a particle will collide with a wall
+	 * @param width of the box
+	 * @return the time a particle will collide with a wall
+	 */
+	public double wallCollisionTime(double width){
+		double timeX;
+		double timeY;
+		if (_vx>0) {
+			timeX = (width-_x+_radius)/_vx;
+		} else {
+			timeX = (_x-_radius)/_vx;
+		}
+		if (_vy>0) {
+			timeY = (width-_y+_radius)/_vy;
+		} else {
+			timeY = (_y-_radius)/_vy;
+		}
+		if (timeX<timeY)
+			return timeX;
+		return timeY;
+	}
+
+	/**
+	 * returns the time a particle will collide with a wall
+	 * @param width of the box
+	 * @return the time a particle will collide with a wall
+	 */
+	public void updateWallCollision(double now, double width){
+		double timeX;
+		double timeY;
+		if (_vx>0) {
+			timeX = (width-_x+_radius)/_vx;
+		} else {
+			timeX = (_x-_radius)/_vx;
+		}
+		if (_vy>0) {
+			timeY = (width-_y+_radius)/_vy;
+		} else {
+			timeY = (_y-_radius)/_vy;
+		}
+
+		if(timeX==now){
+			_vx*=-1;
+		} else {
+			_vy*=-1;
+		}
+		_lastUpdateTime = now;
+	}
+
+
+	/**
 	 * Updates both this particle's and another particle's velocities after a collision between them.
 	 * DO NOT CHANGE THE MATH IN THIS METHOD
 	 * @param now the current time in the simulation

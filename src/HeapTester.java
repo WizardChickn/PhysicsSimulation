@@ -26,14 +26,11 @@ public class HeapTester {
 		for (int i = 0; i < N; i++) {
 			heap.add(numbers[i]);
 		}
-		
-		heap.printList();
+
 		assertEquals(N, heap.size());
 		for (int i = N-1; i >= 0; i--) {
 			
-			System.out.println(heap.removeFirst());
-			
-			//assertEquals((Integer) i, heap.removeFirst());
+			assertEquals((Integer) i, heap.removeFirst());
 		}
 		assertEquals(0, heap.size());
 	}
