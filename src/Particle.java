@@ -59,11 +59,35 @@ public class Particle {
 	 * the particle's current velocity.
 	 * @param delta the elapsed time since the last particle update
 	 */
-	public void update (double delta) {
+	public void update (double delta, int width) {
 		double newX = _x + delta * _vx;
 		double newY = _y + delta * _vy;
+		
 		_x = newX;
 		_y = newY;
+
+		/* 
+		if (newX>width-_radius){
+			_x = width-_radius;
+			//_vx*=-1;
+		}
+		else if (newX<_radius){
+			_x = width-_radius;
+			//_vx*=-1;
+		}
+		else
+			_x = newX;
+		
+		if (newY>width-_radius){
+			_y = width-_radius;
+			//_vy*=-1;
+		}
+		else if (newY<_radius){
+			_y = _radius;
+			//_vy*=-1;
+		}
+		else
+			_y = newY;*/
 	}
 
 	/**
@@ -102,23 +126,76 @@ public class Particle {
 	 * returns the time a particle will collide with a wall
 	 * @param width of the box
 	 * @return the time a particle will collide with a wall
-	 */
-	public double wallCollisionTime(double width){
+	 *//* 
+	public double wallCollisionTime(double now, double width){
 		double timeX;
 		double timeY;
-		if (_vx>0) {
-			timeX = (width-_x+_radius)/_vx;
+		double ultTime;
+		if (_vx>=0) {
+			timeX = (width-(_x+_radius))/_vx;
 		} else {
-			timeX = (_x-_radius)/_vx;
+			timeX = -(_x-_radius)/_vx; // gives negative value when radius greater than distance to the wall
 		}
-		if (_vy>0) {
-			timeY = (width-_y+_radius)/_vy;
+		if (_vy>=0) {
+			timeY = (width-_y-_radius)/_vy;
 		} else {
-			timeY = (_y-_radius)/_vy;
+			timeY = -(_y-_radius)/_vy;
 		}
-		if (timeX<timeY)
-			return timeX;
-		return timeY;
+		if (timeY<0 || timeX<0){
+			int i = 0;
+		}
+		
+
+
+		if (timeX<timeY){
+			ultTime = timeX+now;
+		} else {
+			ultTime =timeY+now;
+		}
+
+		if (ultTime>0){
+			return ultTime;
+		}
+		return now;
+	}*/
+
+	/**
+	 * returns the time a particle will collide with a wall
+	 * @param width of the box
+	 * @return the time a particle will collide with a wall
+	 */
+	public double wallXCollisionTime(double now, double width){
+		double timeX;
+		if (_vx>=0) {
+			timeX = (width-(_x+_radius))/_vx;
+		} else {
+			timeX = -(_x-_radius)/_vx; // gives negative value when radius greater than distance to the wall
+		}
+
+		if (timeX>0){
+			return timeX+now;
+		}
+		return now+Math.abs(timeX);
+	}
+
+	/**
+	 * returns the time a particle will collide with a wall
+	 * @param width of the box
+	 * @return the time a particle will collide with a wall
+	 */
+	public double wallYCollisionTime(double now, double width) {
+		double timeY;
+
+		if (_vy>=0) {
+			timeY = (width-_y-_radius)/_vy;
+		} else {
+			timeY = -(_y-_radius)/_vy;
+		}
+
+		if (timeY>0){
+			return timeY+now;
+		}
+		return now+Math.abs(timeY);
 	}
 
 	/**
@@ -127,24 +204,28 @@ public class Particle {
 	 * @return the time a particle will collide with a wall
 	 */
 	public void updateWallCollision(double now, double width){
-		double timeX;
-		double timeY;
-		if (_vx>0) {
-			timeX = (width-_x+_radius)/_vx;
+		double timeX = wallXCollisionTime(_lastUpdateTime, width);
+		double timeY = wallYCollisionTime(_lastUpdateTime, width);
+		/* 
+		if (_vx>=0) {
+			timeX = (width-(_x+_radius))/_vx;
 		} else {
-			timeX = (_x-_radius)/_vx;
+			timeX = -(_x-_radius)/_vx; // gives negative value when radius greater than distance to the wall
 		}
-		if (_vy>0) {
-			timeY = (width-_y+_radius)/_vy;
+		if (_vy>=0) {
+			timeY = (width-_y-_radius)/_vy;
 		} else {
-			timeY = (_y-_radius)/_vy;
+			timeY = -(_y-_radius)/_vy;
 		}
+		*/
 
 		if(timeX==now){
 			_vx*=-1;
-		} else {
+		} 
+		if (timeY==now){
 			_vy*=-1;
 		}
+		
 		_lastUpdateTime = now;
 	}
 

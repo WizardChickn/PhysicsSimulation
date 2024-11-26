@@ -1,6 +1,6 @@
 class HeapImpl<T extends Comparable<? super T>> implements Heap<T> {
 	private static final int INITIAL_CAPACITY = 128;
-	private T[] _storage;
+	public T[] _storage; //TODO make private
 	private int _numElements;
 
 	@SuppressWarnings("unchecked")
@@ -73,16 +73,21 @@ class HeapImpl<T extends Comparable<? super T>> implements Heap<T> {
 	 * Moves up a given element to its correct position compared to its parent nodes
 	 * @param index the item that is being moved up
 	 */
-	public void bubbleUp (int index) {
+	public void bubbleUp (int index) throws RuntimeException{
 
 		if ((_numElements >= 1)) {
-			System.out.println("start "+index);
-			while (index > 0 && (_storage[index].compareTo(_storage[(index-1)/2]) > 0)){
+			//System.out.println("start "+index);
+			
+			while (index > 0 && (_storage[index].compareTo(_storage[(index-1)/2]) >= 0)){
+				if (_storage[index].compareTo(_storage[(index-1)/2]) == 0){
+
+					//throw new RuntimeException();
+				} else
 				swap(index, (index-1)/2);
 				index = (index-1)/2;
 				
 			}
-			System.out.println("end "+index);
+			//System.out.println("end "+index);
 		}
 	}
 
@@ -110,4 +115,7 @@ class HeapImpl<T extends Comparable<? super T>> implements Heap<T> {
 	public int size () {
 		return _numElements;
 	}
+
 }
+
+	
