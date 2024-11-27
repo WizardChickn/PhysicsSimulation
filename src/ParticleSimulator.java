@@ -36,7 +36,7 @@ public class ParticleSimulator extends JPanel {
 	 * Draws all the particles on the screen at their current locations
 	 * DO NOT MODIFY THIS METHOD
 	 */
-        public void paintComponent (Graphics g) {
+    public void paintComponent (Graphics g) {
 		g.clearRect(0, 0, _width, _width);
 		for (Particle p : _particles) {
 			p.draw(g);
@@ -65,23 +65,22 @@ public class ParticleSimulator extends JPanel {
 	
 	private int getParticleIndex(String name) throws NameNotFoundException{
 		if (name==null)
-		throw new NameNotFoundException();
-			for (int i = 0; i < _particles.size();i++){
-				if (name.equals(_particles.get(i).getName()))
-					return i;
-			}
+			throw new NameNotFoundException();
+		for (int i = 0; i < _particles.size();i++){
+			if (name.equals(_particles.get(i).getName()))
+				return i;
+		}
 		throw new NameNotFoundException();
 	}
 
 	private void addEvents(Particle p, double time){
 		double collision;
 			for (Particle p2 : _particles) {
-				if (p!= p2){
+				if (p!= p2) {
 					collision = p.getCollisionTime(p2);
-					System.out.println("collide"+collision + " "+time+"time");
+					System.out.println("collide" + collision + " " + time + "time");
 					if (collision != Double.POSITIVE_INFINITY) {
 						_events.add(new Event(collision+time, time, p.getName(), p2.getName()));
-						
 					}
 				}
 			}
@@ -90,11 +89,11 @@ public class ParticleSimulator extends JPanel {
 		//_events.add(new Event(p.wallCollisionTime(time, _width), time, p.getName()));
 		double collideX = p.wallXCollisionTime(time, _width);
 		double collideY = p.wallYCollisionTime(time, _width);
-		if (collideX == collideY)
+		if (collideX == collideY) // if a particle hits a corner
 			_events.add(new Event(collideX, time, p.getName()));
-		else if (collideX != Double.POSITIVE_INFINITY)
+		else if (collideX != Double.POSITIVE_INFINITY) // makes sure a particle isn't moving vertical
 			_events.add(new Event(collideX, time, p.getName()));
-		else if (collideY != Double.POSITIVE_INFINITY)
+		if (collideY != Double.POSITIVE_INFINITY && collideX != collideY) // makes sure a particle isn't moving horizontal
 			_events.add(new Event(collideY, time, p.getName()));
 	}
 
@@ -103,97 +102,54 @@ public class ParticleSimulator extends JPanel {
 	 */
 	private void simulate (boolean show) {
 		double lastTime = 0;
-
-		// Create initial events, i.e., all the possible
-		// collisions between all the particles and each other,
-		// and all the particles and the walls.
-
-		for (Particle p : _particles){
+		for (Particle p : _particles) // Create initial events, i.e., all the possible collisions between all the particles and each other, and all the particles and the walls.
 			addEvents(p, lastTime);
-		}
 		_events.add(new TerminationEvent(_duration));
+
 		while (_events.size() > 0) {
 			Event event = _events.removeFirst();
 			double delta = event._timeOfEvent - lastTime;
 			Particle par1;
 			Particle par2;
-			double i = event._timeOfEvent;
-
+			//double i = event._timeOfEvent;
+			
 			if (event instanceof TerminationEvent) { // when the simulation ends updates all particles
 				updateAllParticles(delta);
 				break;
 			}
-
 			try { // try to find the first particle. returns an error if particle name does not exist
 				par1 = _particles.get(getParticleIndex(event._p1));
-			} catch (NameNotFoundException e){ // catches when the event doesn't contain any particle. ie it is termination event. 
-				par1=null;
-			}
+			} catch (NameNotFoundException e) { par1 = null; } // catches when the event doesn't contain any particle. ie it is termination event. 
 			try { // try to find the second particle. returns an error if particle name does not exist
 				par2 = _particles.get(getParticleIndex(event._p2));
-			} catch (NameNotFoundException e){ // catches if the event is a wall collision and the second particle doesn't exist
-				par2=null;
-			}
-
-			// Check if event still valid; if not, then skip this event
-			
-			if (par1 != null && par1.getLastUpdate() != event._timeEventCreated) {
+			} catch (NameNotFoundException e) { par2 = null; } // catches if the event is a wall collision and the second particle doesn't exist
+			if (par2 != null && Double.compare(par2.getLastUpdate(), event._timeEventCreated) > 0) // Check if event still valid; if not, then skip this event
 				continue;
-			}
-
-			// Since the event is valid, then pause the simulation for the right
-			// amount of time, and then update the screen.
-			if (show) {
+			if (par1 != null && Double.compare(par1.getLastUpdate(), event._timeEventCreated) > 0) 
+				continue;
+			if (show)  // Since the event is valid, then pause the simulation for the right amount of time, and then update the screen.
 				try {
 					Thread.sleep((long) delta);
-				} catch (RuntimeException ie) {
-					System.out.println("ahhh delta = "+delta);
-					System.out.println("ahhhh time = "+lastTime);
-					System.out.println("ahhh eventTime = "+event._timeOfEvent);
-					
-
 				} catch (InterruptedException ie) {}
-			}
-
-
-			// Update positions of all particles
-			updateAllParticles(delta);
-
-			// Update the velocity of the particle(s) involved in the collision
-			// (either for a particle-wall collision or a particle-particle collision).
-			// You should call the Particle.updateAfterCollision method at some point.
-			try {
-				if (par2 == null){ // updates the  particle in a wall collision
-					par1.updateWallCollision(lastTime, _width);
-				}
-				else { // if there is a second paricle we know that it was a collision between two particles
-					par1.updateAfterCollision(lastTime, par2); // updates after a collision with two particles
-				}
-				// Enqueue new events for the particle(s) that were involved in this event.
-				addEvents(par1, lastTime);
-				
-			} catch (NullPointerException e){} // catches the situation where there are no particles in the event
-
-
+			updateAllParticles(delta); // Update positions of all particles
+			for (Particle p : _particles)
+				System.out.println(p + " time: " + (event._timeOfEvent));
+			try {// Update the velocity of the particle(s) involved in the collision (either for a particle-wall collision or a particle-particle collision). You should call the Particle.updateAfterCollision method at some point.
+				if (par2 == null) // updates the  particle in a wall collision
+					par1.updateWallCollision(event._timeOfEvent, _width);
+				else // if there is a second paricle we know that it was a collision between two particles
+					par1.updateAfterCollision(event._timeOfEvent, par2); // updates after a collision with two particles
+				addEvents(par1, event._timeOfEvent); // Enqueue new events for the particle(s) that were involved in this event.
+			} catch (NullPointerException e) {} // catches the situation where there are no particles in the event\
 			// Update the time of our simulation
-			//System.out.println(lastTime+" --> "+event._timeOfEvent);
-			//System.out.println(delta);
-			
+			//System.out.println(lastTime+" --> "+event._timeOfEvent + "\n" + delta);
 			lastTime = event._timeOfEvent;
-			
-			// Redraw the screen
-			if (show) {
+			if (show) // Redraw the screen
 				repaint();
-				
-			}
 		}
-
-		// Print out the final state of the simulation
-		System.out.println(_width);
-		System.out.println(_duration);
-		for (Particle p : _particles) {
+		System.out.println(_width + "\n" + _duration); // Print out the final state of the simulation
+		for (Particle p : _particles)
 			System.out.println(p);
-		}
 	}
 
 	public static void main (String[] args) throws IOException {

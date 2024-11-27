@@ -17,7 +17,7 @@
             "vmArgs": "--module-path /Users/eddiegoodwin/Downloads/javafx-sdk-23.0.1/lib --add-modules javafx.controls,javafx.fxml",
             "mainClass": "ParticleSimulator",
             "projectName": "ParticleSimulation_98791fbf",
-            "args": "/Users/eddiegoodwin/Documents/ParticleSimulation/src/particles_a_start.txt"
+            "args": "/Users/eddiegoodwin/Documents/ParticleSimulation/src/particlesInitial.txt"
         }
     ]
 }

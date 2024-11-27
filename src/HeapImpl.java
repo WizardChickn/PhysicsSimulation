@@ -25,7 +25,6 @@ class HeapImpl<T extends Comparable<? super T>> implements Heap<T> {
 		_storage[_numElements] = data;
 		_numElements++;
 		bubbleUp(_numElements - 1);
-	
 	}
 
 	/**
@@ -74,18 +73,14 @@ class HeapImpl<T extends Comparable<? super T>> implements Heap<T> {
 	 * @param index the item that is being moved up
 	 */
 	public void bubbleUp (int index) throws RuntimeException{
-
 		if ((_numElements >= 1)) {
 			//System.out.println("start "+index);
-			
-			while (index > 0 && (_storage[index].compareTo(_storage[(index-1)/2]) >= 0)){
-				if (_storage[index].compareTo(_storage[(index-1)/2]) == 0){
-
+			while (index > 0 && (_storage[index].compareTo(_storage[(index - 1) / 2]) >= 0)){
+				if (_storage[index].compareTo(_storage[(index - 1) / 2]) == 0){ //TODO watch this
 					//throw new RuntimeException();
 				} else
-				swap(index, (index-1)/2);
-				index = (index-1)/2;
-				
+				swap(index, (index - 1) / 2);
+				index = (index - 1) / 2;
 			}
 			//System.out.println("end "+index);
 		}
@@ -95,15 +90,14 @@ class HeapImpl<T extends Comparable<? super T>> implements Heap<T> {
 	 * prints _storage divided into the levels of nodes in the heap
 	 */
 	public void printList(){
-		
 		int vals = 6;
 		System.out.println(_storage[0] + " ");
 		System.out.print(_storage[1] + " ");
 		System.out.println(_storage[2] + " ");
 		for (int i = 3; i < _numElements; i++){
 			if (i == vals){
-			vals *=2;
-			vals+=2;
+			vals *= 2;
+			vals += 2;
 			System.out.println(_storage[i] + " ");
 			}
 			else{
@@ -117,5 +111,3 @@ class HeapImpl<T extends Comparable<? super T>> implements Heap<T> {
 	}
 
 }
-
-	

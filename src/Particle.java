@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.util.*;
+import javax.management.RuntimeErrorException;
 
 public class Particle {
 	private String _name;
@@ -44,7 +45,7 @@ public class Particle {
 	 * DO NOT MODIFY THIS METHOD
 	 */
 	void draw (Graphics g) {
-		g.fillOval((int) (_x - _radius), (int) (_y - _radius), (int) (2*_radius), (int) (2*_radius));
+		g.fillOval((int) (_x - _radius), (int) (_y - _radius), (int) (2 * _radius), (int) (2 * _radius));
 	}
 
 	/**
@@ -62,32 +63,27 @@ public class Particle {
 	public void update (double delta, int width) {
 		double newX = _x + delta * _vx;
 		double newY = _y + delta * _vy;
-		
-		_x = newX;
-		_y = newY;
+		//System.out.println("newX: "+newX);
+		//System.out.println("newY: "+newY);
+		//System.out.println("oohh"+(width-_radius));
 
-		/* 
-		if (newX>width-_radius){
-			_x = width-_radius;
-			//_vx*=-1;
-		}
-		else if (newX<_radius){
-			_x = width-_radius;
-			//_vx*=-1;
-		}
-		else
+		if(Double.compare(newX,(width-_radius))>=0)
+			_x=width-_radius;
+		else if (Double.compare(newX,_radius)<=0)
+			_x = _radius;
+		else 
 			_x = newX;
+
 		
-		if (newY>width-_radius){
-			_y = width-_radius;
-			//_vy*=-1;
-		}
-		else if (newY<_radius){
+		if(Double.compare(newY,(width-_radius))>=0)
+			_y=width-_radius;
+		else if (Double.compare(newY,_radius)<=0){
 			_y = _radius;
-			//_vy*=-1;
 		}
-		else
-			_y = newY;*/
+		else 
+			_y = newY;
+		//System.out.println("x: "+_x);
+		//System.out.println("y: "+_y);
 	}
 
 	/**
@@ -122,80 +118,55 @@ public class Particle {
 		return _lastUpdateTime;
 	}
 
-	/**
-	 * returns the time a particle will collide with a wall
-	 * @param width of the box
-	 * @return the time a particle will collide with a wall
-	 *//* 
-	public double wallCollisionTime(double now, double width){
-		double timeX;
-		double timeY;
-		double ultTime;
-		if (_vx>=0) {
-			timeX = (width-(_x+_radius))/_vx;
-		} else {
-			timeX = -(_x-_radius)/_vx; // gives negative value when radius greater than distance to the wall
-		}
-		if (_vy>=0) {
-			timeY = (width-_y-_radius)/_vy;
-		} else {
-			timeY = -(_y-_radius)/_vy;
-		}
-		if (timeY<0 || timeX<0){
-			int i = 0;
-		}
-		
-
-
-		if (timeX<timeY){
-			ultTime = timeX+now;
-		} else {
-			ultTime =timeY+now;
-		}
-
-		if (ultTime>0){
-			return ultTime;
-		}
-		return now;
-	}*/
 
 	/**
 	 * returns the time a particle will collide with a wall
 	 * @param width of the box
 	 * @return the time a particle will collide with a wall
 	 */
-	public double wallXCollisionTime(double now, double width){
+	public double wallXCollisionTime(double now, double width) throws RuntimeErrorException{
 		double timeX;
-		if (_vx>=0) {
-			timeX = (width-(_x+_radius))/_vx;
-		} else {
-			timeX = -(_x-_radius)/_vx; // gives negative value when radius greater than distance to the wall
+		if (Double.compare(_vx, 0) > 0) {
+			timeX = (width-(_x + _radius)) / _vx;
+		}
+		else if (Double.compare(_vx, 0) == 0){
+			timeX = Double.POSITIVE_INFINITY;
+		}
+		else {
+			timeX = -(_x - _radius) / _vx; // gives negative value when radius greater than distance to the wall
 		}
 
-		if (timeX>0){
-			return timeX+now;
+		if (Double.compare(timeX, 0) >= 0){
+			return timeX + now;
 		}
-		return now+Math.abs(timeX);
+		throw new RuntimeException();
 	}
 
+	
 	/**
 	 * returns the time a particle will collide with a wall
 	 * @param width of the box
 	 * @return the time a particle will collide with a wall
 	 */
-	public double wallYCollisionTime(double now, double width) {
+	public double wallYCollisionTime(double now, double width)  throws RuntimeErrorException {
 		double timeY;
+		//double threshhold = -0.0000000
+		//double negativeZero = -0.0;
+		//double positiveZero = 0.0;
 
-		if (_vy>=0) {
-			timeY = (width-_y-_radius)/_vy;
-		} else {
-			timeY = -(_y-_radius)/_vy;
+		if (Double.compare(_vy, 0) > 0) {
+			timeY = (width - _y - _radius) / _vy;
+		} else if (Double.compare(_vy, 0) == 0) {
+			timeY = Double.POSITIVE_INFINITY;
+		}else {
+			timeY = -(_y - _radius) / _vy;
 		}
 
-		if (timeY>0){
-			return timeY+now;
-		}
-		return now+Math.abs(timeY);
+
+		if (Double.compare(timeY, 0.0) >= 0)
+			return timeY + now;
+		System.out.println(timeY);
+		throw new RuntimeException();
 	}
 
 	/**
@@ -204,28 +175,19 @@ public class Particle {
 	 * @return the time a particle will collide with a wall
 	 */
 	public void updateWallCollision(double now, double width){
-		double timeX = wallXCollisionTime(_lastUpdateTime, width);
-		double timeY = wallYCollisionTime(_lastUpdateTime, width);
-		/* 
-		if (_vx>=0) {
-			timeX = (width-(_x+_radius))/_vx;
-		} else {
-			timeX = -(_x-_radius)/_vx; // gives negative value when radius greater than distance to the wall
-		}
-		if (_vy>=0) {
-			timeY = (width-_y-_radius)/_vy;
-		} else {
-			timeY = -(_y-_radius)/_vy;
-		}
-		*/
+		// takes in the times where the collisions with walls should happen
+		double timeX = wallXCollisionTime(now, width);
+		double timeY = wallYCollisionTime(now, width);
 
-		if(timeX==now){
-			_vx*=-1;
+		//negates the velocities if the particle is currently hitting a walll
+		if(Double.compare(timeX, now) == 0) {
+			_vx *= -1;
 		} 
-		if (timeY==now){
-			_vy*=-1;
+		if (Double.compare(timeY, now) == 0) {
+			_vy *= -1;
 		}
 		
+		//updates when the particle was last altered
 		_lastUpdateTime = now;
 	}
 
@@ -271,19 +233,19 @@ public class Particle {
 		double d = _y - other._y;
 		double r = _radius;
 
-		double A = a*a + c*c;
-		double B = 2 * (a*b + c*d);
-		double C = b*b + d*d - 4*r*r;
+		double A = (a * a) + (c * c);
+		double B = 2 * ((a * b) + (c * d));
+		double C = (b * b) + (d * d) - (4 * r * r);
 
 		// Numerically more stable solution to QE.
 		// https://people.csail.mit.edu/bkph/articles/Quadratics.pdf
 		double t1, t2;
 		if (B >= 0) {
-			t1 = (-B - Math.sqrt(B*B - 4*A*C)) / (2*A);
-			t2 = 2*C / (-B - Math.sqrt(B*B - 4*A*C));
+			t1 = (-B - Math.sqrt((B * B) - (4 * A * C))) / (2 * A);
+			t2 = 2*C / (-B - Math.sqrt((B * B) - (4 * A * C)));
 		} else {
-			t1 = 2*C / (-B + Math.sqrt(B*B - 4*A*C));
-			t2 = (-B + Math.sqrt(B*B - 4*A*C)) / (2*A);
+			t1 = 2*C / (-B + Math.sqrt((B * B) - (4 * A * C)));
+			t2 = (-B + Math.sqrt((B * B) - (4 * A * C))) / (2 * A);
 		}
 
 		// Require that the collision time be slightly larger than 0 to avoid
