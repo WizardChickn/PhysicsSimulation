@@ -67,6 +67,9 @@ public class Particle {
 		//System.out.println("newY: "+newY);
 		//System.out.println("oohh"+(width-_radius));
 
+		_x = newX;
+		_y = newY;
+		/* 
 		if(Double.compare(newX,(width-_radius))>=0)
 			_x=width-_radius;
 		else if (Double.compare(newX,_radius)<=0)
@@ -81,7 +84,7 @@ public class Particle {
 			_y = _radius;
 		}
 		else 
-			_y = newY;
+			_y = newY;*/
 		//System.out.println("x: "+_x);
 		//System.out.println("y: "+_y);
 	}
@@ -118,6 +121,20 @@ public class Particle {
 		return _lastUpdateTime;
 	}
 
+	/**
+	 * 
+	 */
+	private double wallCollisionTime( double width, double velocity, double currentPos){
+		double timeToCollision;
+		if (Double.compare(velocity,0)>0)
+			timeToCollision = ((width-_radius)-currentPos)/velocity;
+		else if (Double.compare(velocity,0)<0)
+			timeToCollision = ((_radius)-currentPos)/velocity;
+		else
+			timeToCollision = Double.POSITIVE_INFINITY;
+		return timeToCollision;
+	}
+
 
 	/**
 	 * returns the time a particle will collide with a wall
@@ -126,6 +143,8 @@ public class Particle {
 	 */
 	public double wallXCollisionTime(double now, double width) throws RuntimeErrorException{
 		double timeX;
+		double SMALL = 1e-6;
+		/* 
 		if (Double.compare(_vx, 0) > 0) {
 			timeX = (width-(_x + _radius)) / _vx;
 		}
@@ -134,11 +153,14 @@ public class Particle {
 		}
 		else {
 			timeX = -(_x - _radius) / _vx; // gives negative value when radius greater than distance to the wall
-		}
+		}*/
+
+		timeX = wallCollisionTime(width, _vx, _x);
 
 		if (Double.compare(timeX, 0) >= 0){
 			return timeX + now;
-		}
+		} else if (Double.compare(timeX, 0) < 0)
+			return now;
 		throw new RuntimeException();
 	}
 
@@ -150,24 +172,29 @@ public class Particle {
 	 */
 	public double wallYCollisionTime(double now, double width)  throws RuntimeErrorException {
 		double timeY;
+		double SMALL = 1e-6;
 		//double threshhold = -0.0000000
 		//double negativeZero = -0.0;
 		//double positiveZero = 0.0;
-
+		/* 
 		if (Double.compare(_vy, 0) > 0) {
 			timeY = (width - _y - _radius) / _vy;
 		} else if (Double.compare(_vy, 0) == 0) {
 			timeY = Double.POSITIVE_INFINITY;
 		}else {
 			timeY = -(_y - _radius) / _vy;
-		}
+		}*/
 
-
-		if (Double.compare(timeY, 0.0) >= 0)
+		timeY = wallCollisionTime(width, _vy, _y);
+		//System.out.println(timeY);
+		if (Double.compare(timeY, 0) >= 0) {
 			return timeY + now;
-		System.out.println(timeY);
-		throw new RuntimeException();
+		} else if (Double.compare(timeY, 0) < 0) {
+			return now;}
+	throw new RuntimeException();
 	}
+
+
 
 	/**
 	 * returns the time a particle will collide with a wall

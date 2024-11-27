@@ -79,7 +79,7 @@ public class ParticleSimulator extends JPanel {
 				if (p!= p2) {
 					collision = p.getCollisionTime(p2);
 					System.out.println("collide" + collision + " " + time + "time");
-					if (collision != Double.POSITIVE_INFINITY) {
+					if (Double.compare(collision, Double.POSITIVE_INFINITY)!=0) {
 						_events.add(new Event(collision+time, time, p.getName(), p2.getName()));
 					}
 				}
@@ -89,11 +89,11 @@ public class ParticleSimulator extends JPanel {
 		//_events.add(new Event(p.wallCollisionTime(time, _width), time, p.getName()));
 		double collideX = p.wallXCollisionTime(time, _width);
 		double collideY = p.wallYCollisionTime(time, _width);
-		if (collideX == collideY) // if a particle hits a corner
+		if (Double.compare(collideX, collideY)==0) // if a particle hits a corner
 			_events.add(new Event(collideX, time, p.getName()));
-		else if (collideX != Double.POSITIVE_INFINITY) // makes sure a particle isn't moving vertical
+		else if (Double.compare(collideX, Double.POSITIVE_INFINITY)!=0) // makes sure a particle isn't moving vertical
 			_events.add(new Event(collideX, time, p.getName()));
-		if (collideY != Double.POSITIVE_INFINITY && collideX != collideY) // makes sure a particle isn't moving horizontal
+		if (Double.compare(collideY, Double.POSITIVE_INFINITY) != 0 && Double.compare(collideX, collideY)!= 0) // makes sure a particle isn't moving horizontal
 			_events.add(new Event(collideY, time, p.getName()));
 	}
 
@@ -137,8 +137,10 @@ public class ParticleSimulator extends JPanel {
 			try {// Update the velocity of the particle(s) involved in the collision (either for a particle-wall collision or a particle-particle collision). You should call the Particle.updateAfterCollision method at some point.
 				if (par2 == null) // updates the  particle in a wall collision
 					par1.updateWallCollision(event._timeOfEvent, _width);
-				else // if there is a second paricle we know that it was a collision between two particles
-					par1.updateAfterCollision(event._timeOfEvent, par2); // updates after a collision with two particles
+				else {// if there is a second paricle we know that it was a collision between two particles
+					par1.updateAfterCollision(event._timeOfEvent, par2);
+					addEvents(par2, event._timeOfEvent);
+				} // updates after a collision with two particles
 				addEvents(par1, event._timeOfEvent); // Enqueue new events for the particle(s) that were involved in this event.
 			} catch (NullPointerException e) {} // catches the situation where there are no particles in the event\
 			// Update the time of our simulation
